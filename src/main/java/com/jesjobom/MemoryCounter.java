@@ -3,6 +3,8 @@ package com.jesjobom;
 import static java.lang.Thread.sleep;
 
 /**
+ * Once started monitors the memory keeping the highest memory usage.
+ * Memory Used = Total Memory set (i.e. Xms) - Free Memory
  *
  * @author jesjobom
  */

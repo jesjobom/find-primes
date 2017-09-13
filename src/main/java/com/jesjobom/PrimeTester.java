@@ -1,12 +1,19 @@
 package com.jesjobom;
 
 /**
- *
- * @author jairton
+ * 
+ * @see https://en.wikipedia.org/wiki/Primality_test
+ * @author jesjobom
  */
 public class PrimeTester {
 	
-	public static boolean isPrimeSlow(Integer number) {
+	/**
+	 * Check if a number is prime through a fast algorithm.
+	 * 
+	 * @param number
+	 * @return 
+	 */
+	public static boolean isPrime(Integer number) {
 		if (number <= 1) {
 			return false;
 		}
@@ -21,32 +28,7 @@ public class PrimeTester {
 		
 		int i = 5;
 		
-		while (i * i <= number) {
-			if(number % i == 0) {
-				return false;
-			}
-			
-			i += 2;
-		}
-		
-		return true;
-	}
-	
-	public static boolean isPrimeFast(Integer number) {
-		if (number <= 1) {
-			return false;
-		}
-		
-		if (number <= 3) {
-			return true;
-		}
-		
-		if (number % 2 == 0 || number % 3 == 0) {
-			return false;
-		}
-		
-		int i = 5;
-		
+		//it will look for dividers until (square root of number)
 		while (i * i <= number) {
 			if(number % i == 0 || number % (i + 2) == 0) {
 				return false;

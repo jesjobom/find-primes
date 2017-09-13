@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author jairton
+ * @author jesjobom
  */
 public class PrimesFinder {
 	
@@ -27,11 +27,37 @@ public class PrimesFinder {
 		alg2(THREADS, NUMBERS);
 	}
 	
+	/**
+	 * This method will look for primes from 1 to <code>numbers</code> distribuiting 
+	 * the processing among <code>thread</code> threads.
+	 * 
+	 * Each thread will receive the same amount of numbers to check, following the order:
+	 * <ul>
+	 * <li><strong>thread 1:</strong> 0*(numbers/thread)+1 to 1*(numbers/thread)</li>
+	 * <li><strong>thread 2:</strong> 1*(numbers/thread)+1 to 2*(numbers/thread)</li>
+	 * <li><strong>thread 3:</strong> 2*(numbers/thread)+1 to 3*(numbers/thread)</li>
+	 * </ul>
+	 * 
+	 * And so on... Example with 100_000 numbers and 10 threads:
+	 * <ul>
+	 * <li><strong>thread 1:</strong> 1 to 10_000</li>
+	 * <li><strong>thread 2:</strong> 10_001 to 20_000</li>
+	 * <li><strong>thread 3:</strong> 20_001 to 30_000</li>
+	 * ...
+	 * <li><strong>thread 10:</strong> 90_001 to 100_000</li>
+	 * </ul>
+	 * 
+	 * Like this, theoretically, the initial threads should have an easier job 
+	 * and should end earlier, leaving the last thead with the heaviest task.
+	 * 
+	 * @param threads
+	 * @param numbers 
+	 */
 	private static void alg1(int threads, int numbers) {
 		final AtomicInteger primes = new AtomicInteger(0);
 		long time = System.currentTimeMillis();
 
-		System.out.println("ALGORITMO MULTI THREAD COM AGRUPAMENTO");
+		System.out.println("ALGORITHM 1 - THREADS WITH SEQUENCIAL GROUPS");
 		
 		ExecutorService poolCount = Executors.newFixedThreadPool(1);
 		ExecutorService poolProcessing = Executors.newFixedThreadPool(threads);
@@ -47,7 +73,7 @@ public class PrimesFinder {
 				int localPrimes = 0;
 				
 				for (int j = value * range +1; j <= (value+1) * range; j++) {
-					if (PrimeTester.isPrimeFast(j)) {
+					if (PrimeTester.isPrime(j)) {
 						localPrimes++;
 					}
 				}
@@ -77,11 +103,37 @@ public class PrimesFinder {
 		
 	}
 	
+	/**
+	 * This method will look for primes from 1 to <code>numbers</code> distribuiting 
+	 * the processing among <code>thread</code> threads.
+	 * 
+	 * Each thread will receive the same amount of numbers to check, following the order:
+	 * <ul>
+	 * <li><strong>thread 1:</strong> 0*(thread)+1, 1*(thread)+1, 2*(thread)+1, ..., (numbers/thread -1)*(thread)+1</li>
+	 * <li><strong>thread 2:</strong> 0*(thread)+2, 1*(thread)+2, 2*(thread)+2, ..., (numbers/thread -1)*(thread)+2</li>
+	 * <li><strong>thread 3:</strong> 0*(thread)+3, 1*(thread)+3, 2*(thread)+3, ..., (numbers/thread -1)*(thread)+3</li>
+	 * </ul>
+	 * 
+	 * And so on... Example with 100_000 numbers and 10 threads:
+	 * <ul>
+	 * <li><strong>thread 1:</strong> 1, 11, 21, 31, ..., 99_991</li>
+	 * <li><strong>thread 2:</strong> 2, 12, 22, 32, ..., 99_992</li>
+	 * <li><strong>thread 3:</strong> 3, 13, 23, 33, ..., 99_993</li>
+	 * ...
+	 * <li><strong>thread 10:</strong> 10, 20, 30, 40, ..., 100_000</li>
+	 * </ul>
+	 * 
+	 * Like this, theoretically, the burden to find primes should be equally
+	 * distribuited, with all the  threads ending at the same time.
+	 * 
+	 * @param threads
+	 * @param numbers 
+	 */
 	private static void alg2(int threads, int numbers) {
 		final AtomicInteger primes = new AtomicInteger(0);
 		long time = System.currentTimeMillis();
 
-		System.out.println("ALGORITMO MULTI THREAD COM AGRUPAMENTO BALANCEADO");
+		System.out.println("ALGORITHM 2 - THREADS WITH BALANCED GROUPS");
 		
 		ExecutorService poolCount = Executors.newFixedThreadPool(1);
 		ExecutorService poolProcessing = Executors.newFixedThreadPool(threads);
@@ -97,7 +149,7 @@ public class PrimesFinder {
 				int localPrimes = 0;
 				
 				for (int j = value +1; j < numbers; j+=threads) {
-					if (PrimeTester.isPrimeFast(j)) {
+					if (PrimeTester.isPrime(j)) {
 						localPrimes++;
 					}
 				}
