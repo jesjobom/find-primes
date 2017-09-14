@@ -29,7 +29,7 @@ public class PrimesFinder {
 	
 	/**
 	 * This method will look for primes from 1 to <code>numbers</code> distribuiting 
-	 * the processing among <code>thread</code> threads.
+	 * the processing among <code>thread</code> sequencial threads.
 	 * 
 	 * Each thread will receive the same amount of numbers to check, following the order:
 	 * <ul>
@@ -73,7 +73,8 @@ public class PrimesFinder {
 				int localPrimes = 0;
 				
 				for (int j = value * range +1; j <= (value+1) * range; j++) {
-					if (PrimeTester.isPrime(j)) {
+					//new Integer is being used to make it easier to GC
+					if (PrimeTester.isPrime(new Integer(j))) {
 						localPrimes++;
 					}
 				}
@@ -105,7 +106,7 @@ public class PrimesFinder {
 	
 	/**
 	 * This method will look for primes from 1 to <code>numbers</code> distribuiting 
-	 * the processing among <code>thread</code> threads.
+	 * the processing among <code>thread</code> balanced threads.
 	 * 
 	 * Each thread will receive the same amount of numbers to check, following the order:
 	 * <ul>
@@ -125,6 +126,10 @@ public class PrimesFinder {
 	 * 
 	 * Like this, theoretically, the burden to find primes should be equally
 	 * distribuited, with all the  threads ending at the same time.
+	 * 
+	 * This would be true if the operation wasn't so dependent of the entry.
+	 * While finding primes, numbers ending in 2,4,5,6,8,0 are easily solved.
+	 * So this distribution is leaving only 40% of threads doing the heavy work.
 	 * 
 	 * @param threads
 	 * @param numbers 
@@ -149,7 +154,8 @@ public class PrimesFinder {
 				int localPrimes = 0;
 				
 				for (int j = value +1; j < numbers; j+=threads) {
-					if (PrimeTester.isPrime(j)) {
+					//new Integer is being used to make it easier to GC
+					if (PrimeTester.isPrime(new Integer(j))) {
 						localPrimes++;
 					}
 				}
