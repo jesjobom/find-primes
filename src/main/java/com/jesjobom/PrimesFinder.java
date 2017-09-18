@@ -25,6 +25,9 @@ public class PrimesFinder {
 		
 		Runtime.getRuntime().gc();
 		alg2(THREADS, NUMBERS);
+		
+		Runtime.getRuntime().gc();
+		alg3(THREADS, NUMBERS);
 	}
 	
 	/**
@@ -33,9 +36,9 @@ public class PrimesFinder {
 	 * 
 	 * Each thread will receive the same amount of numbers to check, following the order:
 	 * <ul>
-	 * <li><strong>thread 1:</strong> 0*(numbers/thread)+1 to 1*(numbers/thread)</li>
-	 * <li><strong>thread 2:</strong> 1*(numbers/thread)+1 to 2*(numbers/thread)</li>
-	 * <li><strong>thread 3:</strong> 2*(numbers/thread)+1 to 3*(numbers/thread)</li>
+	 * <li><strong>thread 1:</strong> 0*(numbers/threads)+1 to 1*(numbers/threads)</li>
+	 * <li><strong>thread 2:</strong> 1*(numbers/threads)+1 to 2*(numbers/threads)</li>
+	 * <li><strong>thread 3:</strong> 2*(numbers/threads)+1 to 3*(numbers/threads)</li>
 	 * </ul>
 	 * 
 	 * And so on... Example with 100_000 numbers and 10 threads:
@@ -66,13 +69,13 @@ public class PrimesFinder {
 		
 		for (int i = 0; i < threads; i++) {
 			
-			final Integer value = i;
+			final Integer step = i;
 			
 			Future<Integer> future = poolProcessing.submit(() -> {
 				int range = numbers / threads;
 				int localPrimes = 0;
 				
-				for (int j = value * range +1; j <= (value+1) * range; j++) {
+				for (int j = step * range +1; j <= (step+1) * range; j++) {
 					//new Integer is being used to make it easier to GC
 					if (PrimeTester.isPrime(new Integer(j))) {
 						localPrimes++;
@@ -110,9 +113,9 @@ public class PrimesFinder {
 	 * 
 	 * Each thread will receive the same amount of numbers to check, following the order:
 	 * <ul>
-	 * <li><strong>thread 1:</strong> 0*(thread)+1, 1*(thread)+1, 2*(thread)+1, ..., (numbers/thread -1)*(thread)+1</li>
-	 * <li><strong>thread 2:</strong> 0*(thread)+2, 1*(thread)+2, 2*(thread)+2, ..., (numbers/thread -1)*(thread)+2</li>
-	 * <li><strong>thread 3:</strong> 0*(thread)+3, 1*(thread)+3, 2*(thread)+3, ..., (numbers/thread -1)*(thread)+3</li>
+	 * <li><strong>thread 1:</strong> 0*(threads)+1, 1*(threads)+1, 2*(threads)+1, ..., (numbers/threads -1)*(threads)+1</li>
+	 * <li><strong>thread 2:</strong> 0*(threads)+2, 1*(threads)+2, 2*(threads)+2, ..., (numbers/threads -1)*(threads)+2</li>
+	 * <li><strong>thread 3:</strong> 0*(threads)+3, 1*(threads)+3, 2*(threads)+3, ..., (numbers/threads -1)*(threads)+3</li>
 	 * </ul>
 	 * 
 	 * And so on... Example with 100_000 numbers and 10 threads:
@@ -148,16 +151,97 @@ public class PrimesFinder {
 		
 		for (int i = 0; i < threads; i++) {
 			
-			final Integer value = i;
+			final Integer step = i;
 			
 			Future<Integer> future = poolProcessing.submit(() -> {
 				int localPrimes = 0;
 				
-				for (int j = value +1; j < numbers; j+=threads) {
+				for (int j = step +1; j < numbers; j+=threads) {
 					//new Integer is being used to make it easier to GC
 					if (PrimeTester.isPrime(new Integer(j))) {
 						localPrimes++;
 					}
+				}
+				return localPrimes;
+			});
+			
+			poolCount.submit(() -> {
+				try {
+					primes.getAndAdd(future.get());
+				} catch (InterruptedException ex) {
+					Logger.getLogger(PrimesFinder.class.getName()).log(Level.SEVERE, null, ex);
+				} catch (ExecutionException ex) {
+					Logger.getLogger(PrimesFinder.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			});
+		}
+		poolProcessing.shutdown();
+		poolCount.shutdown();
+		try {
+			poolCount.awaitTermination(5, TimeUnit.MINUTES);
+		} catch (InterruptedException ex) {
+			Logger.getLogger(PrimesFinder.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
+		memory.shutdown();
+		System.out.println(String.format("Found %,d primes from 1 to %.0e in %d seconds using %d MB of memory.", primes.get(), (double)numbers, (System.currentTimeMillis() - time) / 1000, memory.getFreeMemory() / (1024 * 1024)));
+		
+	}
+	
+	/**
+	 * This method will look for primes from 1 to <code>numbers</code> distribuiting 
+	 * the processing among <code>thread</code> truly balanced threads.
+	 * 
+	 * Each thread will receive the same amount of numbers to check, following the order:
+	 * <ul>
+	 * <li><strong>thread 1:</strong> 0*(threads^2)+(0*threads)+1 to 0*(threads^2)+(0*threads)+threads, 1*(threads^2)+(0*threads)+1 to 1*(threads^2)+(0*threads)+threads, ..., (theads-1)*(threads^2)+(0*threads)+1 to (theads-1)*(threads^2)+(0*threads)+threads</li>
+	 * <li><strong>thread 2:</strong> 0*(threads^2)+(1*threads)+1 to 0*(threads^2)+(1*threads)+threads, 1*(threads^2)+(1*threads)+1 to 1*(threads^2)+(1*threads)+threads, ..., (theads-1)*(threads^2)+(1*threads)+1 to (theads-1)*(threads^2)+(1*threads)+threads</li>
+	 * <li><strong>thread 3:</strong> 0*(threads^2)+(2*threads)+1 to 0*(threads^2)+(2*threads)+threads, 1*(threads^2)+(2*threads)+1 to 1*(threads^2)+(2*threads)+threads, ..., (theads-1)*(threads^2)+(2*threads)+1 to (theads-1)*(threads^2)+(2*threads)+threads</li>
+	 * </ul>
+	 * 
+	 * And so on... Example with 100_000 numbers and 10 threads:
+	 * <ul>
+	 * <li><strong>thread 1:</strong> 01 to 10, 101 to 110, 201 to 210, ..., 99_901 to 99_910</li>
+	 * <li><strong>thread 2:</strong> 11 to 20, 111 to 120, 211 to 220, ..., 99_911 to 99_920</li>
+	 * <li><strong>thread 3:</strong> 21 to 30, 121 to 130, 221 to 230, ..., 99_921 to 99_930</li>
+	 * ...
+	 * <li><strong>thread 10:</strong> 91 to 100, 191 to 200, 291 to 300, ..., 99_991 to 100_00</li>
+	 * </ul>
+	 * 
+	 * Like this, theoretically, the burden to find primes should be equally
+	 * distribuited, for real, with all the threads ending at the same time.
+	 * 
+	 * @param threads
+	 * @param numbers 
+	 */
+	private static void alg3(int threads, int numbers) {
+		final AtomicInteger primes = new AtomicInteger(0);
+		long time = System.currentTimeMillis();
+
+		System.out.println("ALGORITHM 3 - THREADS WITH TRULY BALANCED GROUPS");
+		
+		ExecutorService poolCount = Executors.newFixedThreadPool(1);
+		ExecutorService poolProcessing = Executors.newFixedThreadPool(threads);
+		
+		MemoryCounter memory = new MemoryCounter();
+		memory.start();
+		
+		for (int i = 0; i < threads; i++) {
+			
+			final Integer step = i;
+			
+			Future<Integer> future = poolProcessing.submit(() -> {
+				int localPrimes = 0;
+				
+				for (int j = step*threads +1; j < numbers; j+=threads*threads) {
+					
+					for (int k = j; k < j + threads; k++) {
+						//new Integer is being used to make it easier to GC
+						if (PrimeTester.isPrime(new Integer(k))) {
+							localPrimes++;
+						}
+					}
+					
 				}
 				return localPrimes;
 			});
