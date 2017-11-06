@@ -1,5 +1,8 @@
-package com.jesjobom;
+package com.jesjobom.groups;
 
+import com.jesjobom.AbstractPrimeFinder;
+import com.jesjobom.PrimeTester;
+import com.jesjobom.PrimesFinder;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,7 +49,7 @@ public class PrimeFinderSimpleGroup extends AbstractPrimeFinder {
 
 	@Override
 	public void run() {
-		super.initTest("ALGORITHM 2 - THREADS WITH BALANCED GROUPS");
+		super.initTest("ALGORITHM MANUAL GROUPING 2 - THREADS WITH BALANCED GROUPS");
 
 		ExecutorService poolCount = Executors.newFixedThreadPool(1);
 		ExecutorService poolProcessing = Executors.newFixedThreadPool(threads);

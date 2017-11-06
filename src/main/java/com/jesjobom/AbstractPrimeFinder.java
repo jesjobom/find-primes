@@ -31,7 +31,7 @@ public abstract class AbstractPrimeFinder {
 		
 		Runtime.getRuntime().gc();
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(5000);
 		} catch (InterruptedException ex) {
 		}
 		

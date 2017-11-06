@@ -1,5 +1,11 @@
 package com.jesjobom;
 
+import com.jesjobom.groups.PrimeFinderSimpleGroup;
+import com.jesjobom.groups.PrimeFinderBalancedGroup;
+import com.jesjobom.groups.PrimeFinderSequencialGroup;
+import com.jesjobom.forkjoin.PrimeFinderForkJoinHighRecursion;
+import com.jesjobom.forkjoin.PrimeFinderForkJoinLowRecursion;
+
 /**
  *
  * @author jesjobom
@@ -20,13 +26,19 @@ public class PrimesFinder {
 	
 	public static void main(String[] args) {
 		
-		AbstractPrimeFinder finder = new PrimeFinderSequencialThreads(NUMBERS, THREADS);
+		AbstractPrimeFinder finder = new PrimeFinderSequencialGroup(NUMBERS, THREADS);
 		finder.run();
 		
 		finder = new PrimeFinderSimpleGroup(NUMBERS, THREADS);
 		finder.run();
 		
 		finder = new PrimeFinderBalancedGroup(NUMBERS, THREADS);
+		finder.run();
+
+		finder = new PrimeFinderForkJoinHighRecursion(NUMBERS, THREADS);
+		finder.run();
+		
+		finder = new PrimeFinderForkJoinLowRecursion(NUMBERS, THREADS);
 		finder.run();
 	}
 }

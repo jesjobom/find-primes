@@ -16,18 +16,22 @@ $ mvn exec:java
 [INFO] ------------------------------------------------------------------------
 [INFO] 
 [INFO] --- exec-maven-plugin:1.6.0:java (default-cli) @ find-primes ---
-ALGORITHM 1 - THREADS WITH SEQUENCIAL GROUPS
-Found 16.252.325 primes from 1 to 3e+08 in 49 seconds using 14 MB of memory and 10 threads.
-ALGORITHM 2 - THREADS WITH BALANCED GROUPS
-Found 16.252.325 primes from 1 to 3e+08 in 60 seconds using 16 MB of memory and 10 threads.
-ALGORITHM 3 - THREADS WITH TRULY BALANCED GROUPS
-Found 16.252.325 primes from 1 to 3e+08 in 47 seconds using 14 MB of memory and 10 threads.
+ALGORITHM MANUAL GROUPING 1 - THREADS WITH SEQUENCIAL GROUPS
+Found 16.252.325 primes from 1 to 3e+08 in 48 seconds using 14 MB of memory and 10 threads.
+ALGORITHM MANUAL GROUPING 2 - THREADS WITH BALANCED GROUPS
+Found 16.252.325 primes from 1 to 3e+08 in 52 seconds using 14 MB of memory and 10 threads.
+ALGORITHM MANUAL GROUPING 3 - THREADS WITH TRULY BALANCED GROUPS
+Found 16.252.325 primes from 1 to 3e+08 in 44 seconds using 14 MB of memory and 10 threads.
+ALGORITHM FORK JOIN 1 - FORKING UNTIL GROUPS OF 10
+Found 16.252.325 primes from 1 to 3e+08 in 45 seconds using 231 MB of memory and 10 threads.
+ALGORITHM FORK JOIN 2 - FORKING UNTIL GROUPS OF 30000000
+Found 16.252.325 primes from 1 to 3e+08 in 49 seconds using 36 MB of memory and 10 threads.
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time: 02:41 min
-[INFO] Finished at: 2017-11-01T15:08:25-02:00
-[INFO] Final Memory: 6M/150M
+[INFO] Total time: 04:26 min
+[INFO] Finished at: 2017-11-06T15:14:45-02:00
+[INFO] Final Memory: 6M/115M
 [INFO] ------------------------------------------------------------------------
 
 ```

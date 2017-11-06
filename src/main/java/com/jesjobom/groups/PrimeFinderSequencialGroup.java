@@ -1,5 +1,8 @@
-package com.jesjobom;
+package com.jesjobom.groups;
 
+import com.jesjobom.AbstractPrimeFinder;
+import com.jesjobom.PrimeTester;
+import com.jesjobom.PrimesFinder;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,15 +37,15 @@ import java.util.logging.Logger;
  *
  * @author jesjobom
  */
-public class PrimeFinderSequencialThreads extends AbstractPrimeFinder {
+public class PrimeFinderSequencialGroup extends AbstractPrimeFinder {
 
-	public PrimeFinderSequencialThreads(int numbers, int threads) {
+	public PrimeFinderSequencialGroup(int numbers, int threads) {
 		super(numbers, threads);
 	}
 
 	@Override
 	public void run() {
-		super.initTest("ALGORITHM 1 - THREADS WITH SEQUENCIAL GROUPS");
+		super.initTest("ALGORITHM MANUAL GROUPING 1 - THREADS WITH SEQUENCIAL GROUPS");
 
 		ExecutorService poolCount = Executors.newFixedThreadPool(1);
 		ExecutorService poolProcessing = Executors.newFixedThreadPool(threads);
