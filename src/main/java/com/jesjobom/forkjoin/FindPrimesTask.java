@@ -1,16 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.jesjobom.forkjoin;
 
 import com.jesjobom.PrimeTester;
 import java.util.concurrent.RecursiveTask;
 
 /**
+ * Class for recursively forking, finding primes and joining the results.
+ * The static <code>minimumRange</code> attribute will control how many recursions
+ * will take until the result is returned: a small value will generate more 
+ * recursive calls consuming more memory, distributing the tasks better, and, 
+ * "theoretically", speeding up the process.
  *
- * @author jairton
+ * @author jesjobom
  */
 public class FindPrimesTask extends RecursiveTask<Integer> {
 

@@ -4,7 +4,7 @@ Given a computational problem, how well it is parallelizable and how well differ
 I chose an algorithm to find if a given number is prime or not.
 Since the higher the number is the heavier the operation is, a simple sequencial distribuition of the numbers among N threads is not ideal.
 
-The idea is to test different methods of parallelization without changing the original algorithm, prioritizing memory usage and completion time.
+The idea here is to test different methods of parallelization without changing the original algorithm, prioritizing memory usage and completion time.
 
 ### Example 
 ```
@@ -35,3 +35,22 @@ Found 16.252.325 primes from 1 to 3e+08 in 49 seconds using 36 MB of memory and 
 [INFO] ------------------------------------------------------------------------
 
 ```
+
+### The Algorithm for Finding Primes 
+Since I am testing differents strategies of parallelization of the same work and not the algorithm itself, the algorithm for testing primes surely isn't the best.
+```
+function is_prime(n)
+    if n ≤ 1
+        return false
+    else if n ≤ 3
+        return true
+    else if n mod 2 = 0 or n mod 3 = 0
+        return false
+    let i ← 5
+    while i * i ≤ n
+        if n mod i = 0 or n mod (i + 2) = 0
+            return false
+        i ← i + 6
+    return true
+```
+from Wikipedia ([Primality test](https://en.wikipedia.org/wiki/Primality_test)).
